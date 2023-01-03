@@ -5,5 +5,27 @@ class MoviesController < ApplicationController
     if params[:query].present?
       @movies = @movies.where("title ILIKE ?", "%#{params[:query]}%")
     end
+
+    respond_to do |format|
+      format.html
+      format.text { render partial: 'list', locals: { movies: @movies }, formats: [:html] }
+    end
+  end
+
+  def update
+    # find the record
+    @movie = Movie.find(params[:id])
+    # update the record
+    @movie.update(movie_params)
+    respond_to do |format|
+      format.html { redirect_to movies_path }
+      format.text { render partial: "movies/movie_infos", locals: {movie: @movie}, formats: [:html] }
+    end
+  end
+
+  private
+
+  def movie_params
+    params.require(:movie).permit(:title, :year)
   end
 end
